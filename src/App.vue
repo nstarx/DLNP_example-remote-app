@@ -1,208 +1,193 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import StaticAnalyticsChart from './components/StaticAnalyticsChart.vue';
-import MetricsCard from './components/MetricsCard.vue';
-import { useAnalytics } from './composables/useAnalytics';
-import './utils/resizeObserverFix';
-
-const { metrics, loading, fetchAnalytics } = useAnalytics();
-
-const selectedPeriod = ref('7d');
-
-const periods = [
-    { label: 'Last 24 Hours', value: '1d' },
-    { label: 'Last 7 Days', value: '7d' },
-    { label: 'Last 30 Days', value: '30d' },
-    { label: 'Last 90 Days', value: '90d' }
-];
-
-const changePeriod = (period) => {
-    console.log('Button clicked! Period:', period);
-    console.log('Before change, selectedPeriod:', selectedPeriod.value);
-    selectedPeriod.value = period;
-    console.log('After change, selectedPeriod:', selectedPeriod.value);
-    fetchAnalytics(period);
-};
-
-const refreshData = () => {
-    console.log('Refresh button clicked!');
-    fetchAnalytics(selectedPeriod.value);
-};
-
-const handleRoundButtonClick = () => {
-    console.log('Round button clicked!');
-    // Add your custom functionality here
-};
-
-onMounted(() => {
-    fetchAnalytics(selectedPeriod.value);
-});
-</script>
-
 <template>
-    <div class="remote-analytics-dashboard">
-        <div class="remote-dashboard-header">
-            <h1>Analytics Dashboard ({{ selectedPeriod }})</h1>
-            <div class="remote-header-controls">
-                <div class="remote-period-selector">
-                    <button 
-                        v-for="period in periods" 
-                        :key="period.value"
-                        :class="['remote-period-btn', { active: selectedPeriod === period.value }]"
-                        @click="changePeriod(period.value)"
-                    >
-                        {{ period.label }}
-                    </button>
-                </div>
-                <button 
-                    class="remote-refresh-btn"
-                    @click="refreshData"
-                    :disabled="loading"
-                >
-                    {{ loading ? 'Loading...' : 'Refresh Data' }}
-                </button>
-            </div>
-        </div>
+  <div class="dashboard">
+    <header class="dashboard-header">
+      <div class="header-left">
+        <h1 class="dashboard-title">Analytics Dashboard</h1>
+      </div>
+      <div class="header-right">
+        <PeriodSelector v-model="selectedPeriod" />
+        <DocumentationButton @click="showDocs = true" />
+      </div>
+    </header>
 
-        <div v-if="loading" class="remote-loading-container">
-            <div class="remote-spinner"></div>
-            <p>Loading analytics data...</p>
-        </div>
-
-        <div v-else class="remote-dashboard-content">
-            <div class="remote-metrics-grid">
-                <MetricsCard
-                    v-for="metric in metrics"
-                    :key="metric.id"
-                    :metric="metric"
-                />
-            </div>
-
-            <div class="remote-charts-section">
-                <StaticAnalyticsChart
-                    title="Traffic Overview"
-                    type="line"
-                />
-                <StaticAnalyticsChart
-                    title="User Demographics"
-                    type="bar"
-                />
-            </div>
-        </div>
+    <LoadingSpinner v-if="loading" />
+    
+    <div v-else-if="error" class="error-message">
+      {{ error }}
     </div>
+
+    <div v-else class="dashboard-content">
+      <section class="metrics-section">
+        <div class="metrics-grid">
+          <MetricCard
+            v-for="metric in metrics"
+            :key="metric.label"
+            :metric="metric"
+          />
+        </div>
+      </section>
+
+      <section v-if="chartData" class="charts-section">
+        <div class="charts-grid">
+          <LineChart
+            title="Page Views Trend"
+            :data="chartData.pageViews"
+            :labels="chartData.labels"
+          />
+          <BarChart
+            title="Traffic Sources"
+            :data="barChartData.values"
+            :labels="barChartData.labels"
+          />
+        </div>
+      </section>
+    </div>
+
+    <DocumentationModal v-model="showDocs" />
+  </div>
 </template>
 
-<style>
-.remote-analytics-dashboard {
-    padding: 20px;
-    background-color: #000000;
-    min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+<script setup>
+import { ref, watch, onMounted, inject } from 'vue'
+import { useAnalytics } from '@/composables/useAnalytics'
+import { barChartData } from '@/data/mockData'
+import PeriodSelector from '@/components/dashboard/PeriodSelector.vue'
+import MetricCard from '@/components/dashboard/MetricCard.vue'
+import LineChart from '@/components/charts/LineChart.vue'
+import BarChart from '@/components/charts/BarChart.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import DocumentationButton from '@/components/common/DocumentationButton.vue'
+import DocumentationModal from '@/components/common/DocumentationModal.vue'
+
+const analyticsConfig = inject('analyticsConfig', {})
+const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
+const showDocs = ref(false)
+const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
+
+watch(selectedPeriod, (newPeriod) => {
+  fetchAnalytics(newPeriod)
+})
+
+onMounted(() => {
+  fetchAnalytics(selectedPeriod.value)
+  
+  if (analyticsConfig.refreshInterval) {
+    setInterval(() => {
+      fetchAnalytics(selectedPeriod.value)
+    }, analyticsConfig.refreshInterval)
+  }
+})
+</script>
+
+<style scoped>
+.dashboard {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 24px;
 }
 
-.remote-dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding: 20px;
-    background: #1a1a1a;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  gap: 24px;
 }
 
-.remote-dashboard-header h1 {
-    margin: 0;
-    color: #ffffff;
-    font-size: 28px;
+.header-left {
+  display: flex;
+  align-items: center;
 }
 
-.remote-header-controls {
-    display: flex;
-    gap: 20px;
-    align-items: center;
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.remote-period-selector {
-    display: flex;
-    gap: 10px;
+.dashboard-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
 }
 
-.remote-period-btn {
-    padding: 8px 16px;
-    border: 1px solid #333333;
-    background: #1a1a1a;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 14px;
-    color: #ffffff;
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
-.remote-period-btn:hover {
-    background: #2a2a2a;
-    border-color: #4299e1;
+.error-message {
+  background: #fee;
+  color: #c00;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
 }
 
-.remote-period-btn.active {
-    background: #4299e1;
-    color: white;
-    border-color: #4299e1;
+.metrics-section {
+  width: 100%;
 }
 
-.remote-refresh-btn {
-    padding: 8px 16px;
-    border: 1px solid #333333;
-    background: #1a1a1a;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 14px;
-    color: #ffffff;
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
 }
 
-.remote-refresh-btn:hover {
-    background: #2a2a2a;
-    border-color: #4299e1;
+.charts-section {
+  width: 100%;
 }
 
-.remote-refresh-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
 }
 
-.remote-loading-container {
-    display: flex;
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px;
+  }
+  
+  .dashboard-header {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 400px;
-    color: #ffffff;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .header-left,
+  .header-right {
+    width: 100%;
+  }
+  
+  .header-right {
+    flex-wrap: wrap;
+  }
+  
+  .dashboard-title {
+    font-size: 24px;
+  }
+  
+  .metrics-grid,
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.remote-spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid #333333;
-    border-top-color: #4299e1;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.remote-metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.remote-charts-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 20px;
+@media (prefers-color-scheme: dark) {
+  .dashboard {
+    background: #111827;
+  }
+  
+  .dashboard-title {
+    color: #f9fafb;
+  }
+  
+  .error-message {
+    background: #7f1d1d;
+    color: #fecaca;
+  }
 }
 </style>

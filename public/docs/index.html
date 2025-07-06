@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f6f8fa;
+            color: #24292e;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid #e1e4e8;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #24292e;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 8px 12px;
+            margin: 4px 0;
+            text-decoration: none;
+            color: #586069;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background: #f6f8fa;
+            color: #24292e;
+        }
+
+        .nav-item.active {
+            background: #0969da;
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .markdown-body {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+            background: #f6f8fa;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        
+        .markdown-body pre {
+            margin: 16px 0;
+        }
+        
+        .markdown-body pre code {
+            display: block;
+            padding: 16px;
+            overflow-x: auto;
+            background: #f6f8fa;
+            border-radius: 6px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #586069;
+        }
+
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e1e4e8;
+                padding: 16px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .markdown-body {
+                padding: 20px;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #0d1117;
+                color: #c9d1d9;
+            }
+
+            .sidebar {
+                background: #161b22;
+                border-color: #30363d;
+            }
+
+            .nav-item {
+                color: #8b949e;
+            }
+
+            .nav-item:hover {
+                background: #262c36;
+                color: #c9d1d9;
+            }
+
+            .markdown-body {
+                background: #161b22;
+                color: #c9d1d9;
+            }
+
+            .error {
+                background: #3d1f1f;
+                color: #ff6b6b;
+            }
+            
+            .mermaid {
+                background: #21262d;
+            }
+            
+            .markdown-body pre code {
+                background: #21262d;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <h2>Documentation</h2>
+            <a class="nav-item active" data-doc="overview">Overview</a>
+            <a class="nav-item" data-doc="design">Design Principles</a>
+            <a class="nav-item" data-doc="architecture">Architecture</a>
+            <a class="nav-item" data-doc="diagrams">Diagrams</a>
+            <a class="nav-item" data-doc="readme">README</a>
+        </nav>
+
+        <main class="content">
+            <div id="doc-content" class="markdown-body">
+                <div class="loading">Loading documentation...</div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default',
+            themeVariables: {
+                primaryColor: '#4f46e5',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#4338ca',
+                lineColor: '#6b7280',
+                secondaryColor: '#f3f4f6',
+                tertiaryColor: '#e5e7eb'
+            }
+        });
+
+        const docs = {
+            overview: {
+                title: 'Analytics Dashboard Overview',
+                content: `# Analytics Dashboard Overview
+
+Welcome to the Analytics Dashboard documentation. This micro-frontend application provides a modern, modular analytics solution built with Vue 3 and Vite.
+
+## System Architecture Overview
+
+\`\`\`mermaid
+graph TB
+    subgraph "Host Application"
+        HA[Host App]
+    end
+
+    subgraph "Analytics Dashboard Remote"
+        AD[Analytics Dashboard]
+        subgraph "Presentation Layer"
+            VC[Vue Components]
+            T[Templates]
+        end
+
+        subgraph "Business Logic Layer"
+            C[Composables]
+            S[Services]
+        end
+
+        subgraph "Data Layer"
+            API[API Service]
+            MD[Mock Data]
+            M[Models]
+        end
+
+        subgraph "Infrastructure"
+            V[Vite]
+            MF[Module Federation]
+        end
+    end
+
+    HA -->|imports| AD
+    VC --> C
+    C --> S
+    S --> API
+    S --> MD
+    V --> MF
+    MF --> AD
+\`\`\`
+
+## Key Features
+
+- **Modern Architecture**: Built with Vue 3 Composition API and Vite
+- **Module Federation**: Seamlessly integrate with host applications
+- **Responsive Design**: Works beautifully on all devices
+- **Dark Mode**: Automatic theme switching
+- **Mock Data**: Built-in data for development
+- **Performance**: Optimized for speed and efficiency
+
+## Technology Stack
+
+- Vue 3 (Composition API)
+- Vite (Build tool)
+- Module Federation (Micro-frontend)
+- CSS Modules (Styling)
+- Mock Data Service (Development)
+
+## Use Cases
+
+This dashboard is perfect for:
+- Analytics and metrics visualization
+- Business intelligence dashboards
+- Real-time monitoring systems
+- Data exploration interfaces
+- Admin panels and control centers`
+            },
+            design: './DESIGN.md',
+            architecture: './ARCHITECTURE.md',
+            diagrams: {
+                title: 'Architecture Diagrams',
+                content: `# Architecture Diagrams
+
+## Component Architecture
+
+\`\`\`mermaid
+graph TD
+    App[App.vue - Container]
+    App --> Header[DashboardHeader]
+    App --> Metrics[MetricsGrid]
+    App --> Charts[ChartsSection]
+
+    Header --> PS[PeriodSelector]
+
+    Metrics --> MC1[MetricCard]
+    Metrics --> MC2[MetricCard]
+    Metrics --> MC3[MetricCard]
+    Metrics --> MC4[MetricCard]
+
+    Charts --> LC[LineChart]
+    Charts --> BC[BarChart]
+
+    MC1 --> BaseCard1[BaseCard]
+    MC2 --> BaseCard2[BaseCard]
+    LC --> BaseCard3[BaseCard]
+    BC --> BaseCard4[BaseCard]
+\`\`\`
+
+## Data Flow
+
+\`\`\`mermaid
+sequenceDiagram
+    participant U as User
+    participant App as App.vue
+    participant PS as PeriodSelector
+    participant UA as useAnalytics
+    participant AS as AnalyticsService
+    participant MD as Mock Data
+
+    U->>PS: Select Period
+    PS->>App: Emit Period Change
+    App->>UA: fetchAnalytics(period)
+    UA->>AS: getMetrics(period)
+    AS->>MD: Fetch Mock Data
+    MD-->>AS: Return Data
+    AS-->>UA: Return Metrics
+    UA->>AS: getChartData(period)
+    AS->>MD: Fetch Chart Data
+    MD-->>AS: Return Chart Data
+    AS-->>UA: Return Chart Data
+    UA-->>App: Update State
+    App-->>U: Render Dashboard
+\`\`\`
+
+## Module Federation Architecture
+
+\`\`\`mermaid
+graph LR
+    subgraph "Development"
+        D[Developer] --> V[Vite Dev Server]
+        V --> MFP[Module Federation Plugin]
+    end
+
+    subgraph "Build Process"
+        MFP --> B[Build]
+        B --> RE[remoteEntry.js]
+        B --> C[Chunks]
+    end
+
+    subgraph "Runtime"
+        HA[Host Application] --> RE
+        RE --> AD[Analytics Dashboard]
+        AD --> SV[Shared Vue]
+    end
+\`\`\`
+
+## Component Lifecycle
+
+\`\`\`mermaid
+stateDiagram-v2
+    [*] --> Mounting
+    Mounting --> Loading
+    Loading --> FetchingData
+
+    FetchingData --> Success
+    FetchingData --> Error
+
+    Success --> DisplayingData
+    Error --> ErrorState
+
+    DisplayingData --> PeriodChange
+    PeriodChange --> FetchingData
+
+    ErrorState --> Retry
+    Retry --> FetchingData
+\`\`\`
+
+## Directory Structure
+
+\`\`\`mermaid
+graph TD
+    Root[analytics-dashboard/]
+    Root --> Src[src/]
+    Root --> Public[public/]
+    Root --> Config[config files]
+
+    Src --> Components[components/]
+    Src --> Composables[composables/]
+    Src --> Services[services/]
+    Src --> Data[data/]
+    Src --> Styles[styles/]
+
+    Components --> Common[common/]
+    Components --> Dashboard[dashboard/]
+    Components --> Charts[charts/]
+
+    Common --> BC[BaseCard.vue]
+    Common --> LS[LoadingSpinner.vue]
+
+    Dashboard --> MC[MetricCard.vue]
+    Dashboard --> PS[PeriodSelector.vue]
+
+    Charts --> LC[LineChart.vue]
+    Charts --> BC2[BarChart.vue]
+\`\`\`
+
+## Build and Deployment Flow
+
+\`\`\`mermaid
+flowchart LR
+    subgraph "Development"
+        DC[Code Changes] --> HMR[Hot Module Replacement]
+        HMR --> LP[Live Preview]
+    end
+
+    subgraph "CI/CD Pipeline"
+        DC --> GH[Git Push]
+        GH --> CI[CI Build]
+        CI --> TEST[Tests]
+        TEST --> BUILD[Production Build]
+        BUILD --> OPT[Optimization]
+        OPT --> DEPLOY[Deploy]
+    end
+
+    subgraph "Production"
+        DEPLOY --> CDN[CDN Distribution]
+        CDN --> HOST[Host Apps]
+        HOST --> USERS[End Users]
+    end
+\`\`\`
+
+## State Management Pattern
+
+\`\`\`mermaid
+graph TD
+    subgraph "useAnalytics Composable"
+        State[Reactive State]
+        State --> MS[metrics ref]
+        State --> CD[chartData ref]
+        State --> LD[loading ref]
+        State --> ER[error ref]
+
+        Actions[Actions]
+        Actions --> FA[fetchAnalytics]
+
+        Computed[Computed]
+        Computed --> HD[hasData]
+    end
+
+    Component[Vue Component] --> Actions
+    Actions --> Service[Analytics Service]
+    Service --> State
+    State --> Component
+\`\`\``
+            },
+            readme: './README-REFACTORED.md'
+        };
+
+        const navItems = document.querySelectorAll('.nav-item');
+        const contentDiv = document.getElementById('doc-content');
+
+        async function loadDocument(docKey) {
+            const doc = docs[docKey];
+
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.doc === docKey);
+            });
+
+            contentDiv.innerHTML = '<div class="loading">Loading documentation...</div>';
+
+            try {
+                let content;
+
+                if (typeof doc === 'string') {
+                    const response = await fetch(doc);
+                    if (!response.ok) throw new Error('Failed to load document');
+                    content = await response.text();
+                } else {
+                    content = doc.content;
+                }
+
+                const html = marked.parse(content);
+                contentDiv.innerHTML = html;
+
+                // Find all code blocks with mermaid class and process them
+                const mermaidBlocks = contentDiv.querySelectorAll('pre code.language-mermaid');
+                mermaidBlocks.forEach((block) => {
+                    const mermaidDiv = document.createElement('div');
+                    mermaidDiv.className = 'mermaid';
+                    mermaidDiv.textContent = block.textContent;
+                    block.parentElement.replaceWith(mermaidDiv);
+                });
+
+                // Run mermaid on the new elements
+                await mermaid.run({
+                    querySelector: '.mermaid'
+                });
+
+                contentDiv.scrollTop = 0;
+            } catch (error) {
+                contentDiv.innerHTML = `<div class="error">Error loading documentation: ${error.message}</div>`;
+            }
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                loadDocument(item.dataset.doc);
+            });
+        });
+
+        loadDocument('overview');
+
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'load-doc' && event.data.doc) {
+                loadDocument(event.data.doc);
+            }
+        });
+    </script>
+</body>
+</html>
