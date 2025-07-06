@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Integration Test</title>
+</head>
+<body>
+    <h1>Testing Module Federation Integration</h1>
+    <p>Check the browser console for any errors.</p>
+    <p>Host app should be running at: <a href="http://0.0.0.0:3000" target="_blank">http://0.0.0.0:3000</a></p>
+    <p>Remote app should be running at: <a href="http://0.0.0.0:3001" target="_blank">http://0.0.0.0:3001</a></p>
+
+    <script>
+        // Test if remoteEntry.js is accessible
+        fetch('http://0.0.0.0:3001/remoteEntry.js')
+            .then(response => {
+                console.log('Remote entry status:', response.status);
+                return response.text();
+            })
+            .then(text => {
+                console.log('Remote entry loaded, size:', text.length);
+            })
+            .catch(error => {
+                console.error('Failed to load remote entry:', error);
+            });
+    </script>
+</body>
+</html>

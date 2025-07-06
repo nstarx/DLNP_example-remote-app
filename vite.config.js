@@ -12,6 +12,7 @@ export default defineConfig({
       exposes: {
         './App': './src/exports/App.js',
         './Analytics': './src/exports/Analytics.js',
+        './AnalyticsBridge': './src/exports/analytics-bridge.js',
         './components/MetricCard': './src/components/dashboard/MetricCard.vue',
         './components/LineChart': './src/components/charts/LineChart.vue',
         './components/BarChart': './src/components/charts/BarChart.vue',
@@ -22,6 +23,10 @@ export default defineConfig({
         vue: {
           singleton: true,
           requiredVersion: '^3.3.4'
+        },
+        '@module-federation/bridge-vue3': {
+          singleton: true,
+          requiredVersion: '^0.16.0'
         }
       }
     })
@@ -32,6 +37,7 @@ export default defineConfig({
     }
   },
   server: {
+    host: '0.0.0.0',
     port: 3001,
     cors: true,
     headers: {
@@ -47,6 +53,20 @@ export default defineConfig({
     rollupOptions: {
       output: {
         format: 'es'
+      }
+    }
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 3001,
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    },
+    proxy: {
+      '/remoteEntry.js': {
+        target: 'http://0.0.0.0:3001',
+        rewrite: () => '/assets/remoteEntry.js'
       }
     }
   }

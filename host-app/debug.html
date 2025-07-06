@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Module Federation</title>
+</head>
+<body>
+    <h1>Module Federation Debug</h1>
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(message) {
+            const p = document.createElement('p');
+            p.textContent = message;
+            output.appendChild(p);
+            console.log(message);
+        }
+
+        // Check if we can access the remote entry
+        log('Checking remote entry...');
+
+        fetch('http://0.0.0.0:3001/remoteEntry.js')
+            .then(response => {
+                log(`Remote entry status: ${response.status}`);
+                return response.text();
+            })
+            .then(text => {
+                log(`Remote entry loaded, size: ${text.length} bytes`);
+
+                // Check for AnalyticsBridge export
+                if (text.includes('AnalyticsBridge')) {
+                    log('✓ AnalyticsBridge export found in remoteEntry.js');
+                } else {
+                    log('✗ AnalyticsBridge export NOT found in remoteEntry.js');
+                }
+            })
+            .catch(error => {
+                log(`Failed to load remote entry: ${error.message}`);
+            });
+    </script>
+</body>
+</html>

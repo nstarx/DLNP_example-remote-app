@@ -8,7 +8,7 @@ export default defineConfig({
     federation({
       name: 'hostApp',
       remotes: {
-        analyticsDashboard: 'http://localhost:3001/assets/remoteEntry.js'
+        analyticsDashboard: 'http://0.0.0.0:3001/assets/remoteEntry.js'
       },
       shared: {
         vue: {
@@ -19,6 +19,7 @@ export default defineConfig({
     })
   ],
   server: {
+    host: '0.0.0.0',
     port: 3000
   }
 })
