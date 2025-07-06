@@ -47,18 +47,20 @@ const formatValue = (value) => {
 
 <style>
 .remote-metric-card {
-    background: white;
+    background: #1a1a1a;
     padding: 24px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
     transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #333333;
     /* Prevent resize observer issues */
     contain: layout style;
 }
 
 .remote-metric-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+    border-color: #4299e1;
 }
 
 .remote-metric-header {
@@ -70,25 +72,26 @@ const formatValue = (value) => {
 
 .remote-metric-label {
     font-size: 14px;
-    color: #718096;
+    color: #9ca3af;
     font-weight: 500;
 }
 
 .remote-metric-icon {
     width: 40px;
     height: 40px;
-    background: #edf2f7;
+    background: #2a2a2a;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
+    border: 1px solid #333333;
 }
 
 .remote-metric-value {
     font-size: 32px;
     font-weight: 700;
-    color: #1a202c;
+    color: #ffffff;
     margin-bottom: 12px;
 }
 
@@ -112,11 +115,11 @@ const formatValue = (value) => {
 }
 
 .remote-metric-change.neutral {
-    color: #718096;
+    color: #9ca3af;
 }
 
 .remote-metric-period {
     font-size: 12px;
-    color: #a0aec0;
+    color: #6b7280;
 }
 </style>

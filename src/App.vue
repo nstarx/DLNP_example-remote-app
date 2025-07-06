@@ -93,48 +93,55 @@ onMounted(() => {
 </template>
 
 <style>
-.analytics-dashboard {
+.remote-analytics-dashboard {
     padding: 20px;
-    background-color: #f8f9fa;
+    background-color: #000000;
     min-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.dashboard-header {
+.remote-dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
     padding: 20px;
-    background: white;
+    background: #1a1a1a;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
 }
 
-.dashboard-header h1 {
+.remote-dashboard-header h1 {
     margin: 0;
-    color: #1a202c;
+    color: #ffffff;
     font-size: 28px;
 }
 
-.period-selector {
+.remote-header-controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.remote-period-selector {
     display: flex;
     gap: 10px;
 }
 
 .remote-period-btn {
     padding: 8px 16px;
-    border: 1px solid #e2e8f0;
-    background: white;
+    border: 1px solid #333333;
+    background: #1a1a1a;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
     font-size: 14px;
-    color: #4a5568;
+    color: #ffffff;
 }
 
 .remote-period-btn:hover {
-    background: #f7fafc;
+    background: #2a2a2a;
+    border-color: #4299e1;
 }
 
 .remote-period-btn.active {
@@ -143,18 +150,40 @@ onMounted(() => {
     border-color: #4299e1;
 }
 
+.remote-refresh-btn {
+    padding: 8px 16px;
+    border: 1px solid #333333;
+    background: #1a1a1a;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.remote-refresh-btn:hover {
+    background: #2a2a2a;
+    border-color: #4299e1;
+}
+
+.remote-refresh-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .remote-loading-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 400px;
+    color: #ffffff;
 }
 
 .remote-spinner {
     width: 50px;
     height: 50px;
-    border: 3px solid #e2e8f0;
+    border: 3px solid #333333;
     border-top-color: #4299e1;
     border-radius: 50%;
     animation: spin 1s linear infinite;

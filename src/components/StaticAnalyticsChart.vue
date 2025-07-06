@@ -80,7 +80,7 @@ const svgPath = computed(() => {
                         :y1="i * 28" 
                         :x2="360" 
                         :y2="i * 28" 
-                        stroke="#e0e0e0" 
+                        stroke="#333333" 
                         stroke-width="1"
                     />
                 </g>
@@ -122,10 +122,11 @@ const svgPath = computed(() => {
 
 <style>
 .remote-chart-container {
-    background: white;
+    background: #1a1a1a;
     padding: 24px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+    border: 1px solid #333333;
     /* Prevent resize observer issues */
     contain: layout style;
     will-change: auto;
@@ -135,7 +136,7 @@ const svgPath = computed(() => {
     margin: 0 0 20px 0;
     font-size: 18px;
     font-weight: 600;
-    color: #1a202c;
+    color: #ffffff;
 }
 
 /* Bar Chart Styles */
@@ -174,7 +175,7 @@ const svgPath = computed(() => {
 
 .bar:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(66, 153, 225, 0.3);
+    box-shadow: 0 4px 8px rgba(66, 153, 225, 0.5);
 }
 
 .bar-value {
@@ -186,7 +187,7 @@ const svgPath = computed(() => {
 .bar-label {
     margin-top: 8px;
     font-size: 12px;
-    color: #4a5568;
+    color: #9ca3af;
     font-weight: 500;
 }
 
@@ -209,7 +210,7 @@ const svgPath = computed(() => {
 
 .line-labels span {
     font-size: 11px;
-    color: #4a5568;
+    color: #9ca3af;
 }
 
 .grid line {
