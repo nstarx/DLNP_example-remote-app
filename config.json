@@ -1,0 +1,7 @@
+{
+  "auths": {
+    "nstarx.azurecr.io": {
+       "auth": "bnN0YXJ4Ok5HZE5SOFkvYmNSbmMyRTdNdGpDdVByOVZ1a2JrZy9iSjY1L1dNcHhkdStBQ1JCY2ROYzU="
+    }
+  }
+}
