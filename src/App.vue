@@ -6,6 +6,13 @@
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
+        <button 
+          @click="showHelloWorld" 
+          class="hello-world-button"
+          type="button"
+        >
+          Hello World
+        </button>
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
@@ -64,6 +71,10 @@ const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
+const showHelloWorld = () => {
+  alert('Hello World!')
+}
+
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
@@ -103,6 +114,27 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.hello-world-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hello-world-button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.hello-world-button:active {
+  transform: translateY(0);
 }
 
 .dashboard-title {
@@ -188,6 +220,14 @@ onMounted(() => {
   .error-message {
     background: #7f1d1d;
     color: #fecaca;
+  }
+  
+  .hello-world-button {
+    background: #4f46e5;
+  }
+  
+  .hello-world-button:hover {
+    background: #4338ca;
   }
 }
 </style>
