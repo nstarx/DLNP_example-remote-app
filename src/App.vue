@@ -6,6 +6,7 @@
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
+        <DellModelsButton @click="showDellModels = true" />
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
@@ -44,6 +45,7 @@
     </div>
 
     <DocumentationModal v-model="showDocs" />
+    <DellModelsPopup v-model="showDellModels" />
   </div>
 </template>
 
@@ -58,10 +60,13 @@ import BarChart from '@/components/charts/BarChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import DocumentationButton from '@/components/common/DocumentationButton.vue'
 import DocumentationModal from '@/components/common/DocumentationModal.vue'
+import DellModelsButton from '@/components/common/DellModelsButton.vue'
+import DellModelsPopup from '@/components/common/DellModelsPopup.vue'
 
 const analyticsConfig = inject('analyticsConfig', {})
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
+const showDellModels = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
 watch(selectedPeriod, (newPeriod) => {
