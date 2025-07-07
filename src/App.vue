@@ -5,6 +5,12 @@
         <h1 class="dashboard-title">Analytics Dashboard</h1>
       </div>
       <div class="header-right">
+        <button class="magic-button magic-button-1" @click="handleMagicButton1">
+          ✨ Hello World! ✨
+        </button>
+        <button class="magic-button magic-button-2" @click="handleMagicButton2">
+          🎉 Hello World! 🎉
+        </button>
         <PeriodSelector v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
       </div>
@@ -64,6 +70,15 @@ const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
+// Magic button handlers
+const handleMagicButton1 = () => {
+  alert('✨ Hello World! ✨\nMagic Button 1 clicked!')
+}
+
+const handleMagicButton2 = () => {
+  alert('🎉 Hello World! 🎉\nMagic Button 2 clicked!')
+}
+
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
@@ -103,6 +118,44 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.magic-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.magic-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.magic-button:active {
+  transform: translateY(0);
+}
+
+.magic-button-1 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.magic-button-1:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.magic-button-2 {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.magic-button-2:hover {
+  background: linear-gradient(135deg, #ed64a6 0%, #e53e3e 100%);
 }
 
 .dashboard-title {
@@ -164,6 +217,11 @@ onMounted(() => {
   
   .header-right {
     flex-wrap: wrap;
+  }
+  
+  .magic-button {
+    font-size: 12px;
+    padding: 6px 12px;
   }
   
   .dashboard-title {
