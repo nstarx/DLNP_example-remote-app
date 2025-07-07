@@ -6,6 +6,17 @@
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
+        <button class="dell-popup-btn" @click="showDellPopup = true">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="20" height="20" rx="4" fill="#007DB8"/>
+            <path d="M5 6H15V14H5V6Z" fill="white"/>
+            <path d="M6 7.5H9V12.5H6V7.5Z" fill="#007DB8"/>
+            <path d="M10 7.5H14V8.5H10V7.5Z" fill="#007DB8"/>
+            <path d="M10 9.5H14V10.5H10V9.5Z" fill="#007DB8"/>
+            <path d="M10 11.5H14V12.5H10V11.5Z" fill="#007DB8"/>
+          </svg>
+          Dell Models
+        </button>
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
@@ -44,6 +55,12 @@
     </div>
 
     <DocumentationModal v-model="showDocs" />
+    <DellModelsPopup 
+      :show="showDellPopup" 
+      @close="showDellPopup = false"
+      @refresh="handleDellRefresh"
+      @view-details="handleDellDetails"
+    />
   </div>
 </template>
 
@@ -58,11 +75,22 @@ import BarChart from '@/components/charts/BarChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import DocumentationButton from '@/components/common/DocumentationButton.vue'
 import DocumentationModal from '@/components/common/DocumentationModal.vue'
+import DellModelsPopup from '@/components/common/DellModelsPopup.vue'
 
 const analyticsConfig = inject('analyticsConfig', {})
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
+const showDellPopup = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
+
+const handleDellRefresh = () => {
+  console.log('Dell models data refreshed')
+}
+
+const handleDellDetails = () => {
+  console.log('Viewing Dell models details')
+  // Could navigate to a detailed view or open another modal
+}
 
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
@@ -176,6 +204,31 @@ onMounted(() => {
   }
 }
 
+.dell-popup-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #007DB8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.dell-popup-btn:hover {
+  background: #005c8a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 125, 184, 0.3);
+}
+
+.dell-popup-btn:active {
+  transform: translateY(0);
+}
+
 @media (prefers-color-scheme: dark) {
   .dashboard {
     background: #111827;
@@ -188,6 +241,14 @@ onMounted(() => {
   .error-message {
     background: #7f1d1d;
     color: #fecaca;
+  }
+  
+  .dell-popup-btn {
+    background: #0891b2;
+  }
+  
+  .dell-popup-btn:hover {
+    background: #0e7490;
   }
 }
 </style>
