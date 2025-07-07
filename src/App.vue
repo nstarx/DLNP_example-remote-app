@@ -7,6 +7,9 @@
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
+        <button class="red-button" @click="handleRedButtonClick">
+          Red Button
+        </button>
       </div>
     </header>
 
@@ -64,6 +67,11 @@ const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
+const handleRedButtonClick = () => {
+  console.log('Red button clicked!')
+  // Add your custom logic here
+}
+
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
@@ -110,6 +118,26 @@ onMounted(() => {
   font-weight: 700;
   color: #111827;
   margin: 0;
+}
+
+.red-button {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.red-button:hover {
+  background-color: #b91c1c;
+}
+
+.red-button:active {
+  background-color: #991b1b;
 }
 
 .dashboard-content {
