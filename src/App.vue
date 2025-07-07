@@ -5,6 +5,7 @@
         <h1 class="dashboard-title">Analytics Dashboard</h1>
       </div>
       <div class="header-right">
+        <MagicButton />
         <PeriodSelector v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
       </div>
@@ -58,6 +59,7 @@ import BarChart from '@/components/charts/BarChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import DocumentationButton from '@/components/common/DocumentationButton.vue'
 import DocumentationModal from '@/components/common/DocumentationModal.vue'
+import MagicButton from '@/components/common/MagicButton.vue'
 
 const analyticsConfig = inject('analyticsConfig', {})
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
