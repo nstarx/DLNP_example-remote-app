@@ -5,6 +5,29 @@
         <h1 class="dashboard-title">Analytics Dashboard</h1>
       </div>
       <div class="header-right">
+        <div class="magic-buttons">
+          <button 
+            @click="performMagic('sparkle')" 
+            class="magic-button sparkle"
+            :class="{ active: activeMagic === 'sparkle' }"
+          >
+            ✨ Sparkle
+          </button>
+          <button 
+            @click="performMagic('rainbow')" 
+            class="magic-button rainbow"
+            :class="{ active: activeMagic === 'rainbow' }"
+          >
+            🌈 Rainbow
+          </button>
+          <button 
+            @click="performMagic('lightning')" 
+            class="magic-button lightning"
+            :class="{ active: activeMagic === 'lightning' }"
+          >
+            ⚡ Lightning
+          </button>
+        </div>
         <PeriodSelector v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
       </div>
@@ -62,7 +85,33 @@ import DocumentationModal from '@/components/common/DocumentationModal.vue'
 const analyticsConfig = inject('analyticsConfig', {})
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
+const activeMagic = ref(null)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
+
+const performMagic = (type) => {
+  activeMagic.value = type
+  
+  // Clear previous magic effect
+  document.body.className = document.body.className.replace(/magic-\w+/g, '')
+  
+  // Apply new magic effect
+  document.body.classList.add(`magic-${type}`)
+  
+  // Show visual feedback
+  const messages = {
+    sparkle: '✨ Sparkle magic activated! ✨',
+    rainbow: '🌈 Rainbow magic activated! 🌈',
+    lightning: '⚡ Lightning magic activated! ⚡'
+  }
+  
+  console.log(messages[type])
+  
+  // Auto-clear after 3 seconds
+  setTimeout(() => {
+    activeMagic.value = null
+    document.body.classList.remove(`magic-${type}`)
+  }, 3000)
+}
 
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
@@ -103,6 +152,62 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.magic-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.magic-button {
+  padding: 8px 16px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fff;
+  color: #374151;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.magic-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.magic-button.sparkle {
+  border-color: #fbbf24;
+}
+
+.magic-button.sparkle:hover,
+.magic-button.sparkle.active {
+  background: #fbbf24;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+.magic-button.rainbow {
+  border-color: #ec4899;
+}
+
+.magic-button.rainbow:hover,
+.magic-button.rainbow.active {
+  background: linear-gradient(45deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #8b5cf6, #ec4899);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+}
+
+.magic-button.lightning {
+  border-color: #3b82f6;
+}
+
+.magic-button.lightning:hover,
+.magic-button.lightning.active {
+  background: #3b82f6;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
 }
 
 .dashboard-title {
@@ -166,6 +271,20 @@ onMounted(() => {
     flex-wrap: wrap;
   }
   
+  .magic-buttons {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+  
+  .magic-button {
+    flex: 1;
+    max-width: 100px;
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  
   .dashboard-title {
     font-size: 24px;
   }
@@ -189,5 +308,46 @@ onMounted(() => {
     background: #7f1d1d;
     color: #fecaca;
   }
+  
+  .magic-button {
+    background: #374151;
+    color: #f9fafb;
+  }
+}
+
+/* Global magic effects */
+:global(body.magic-sparkle) {
+  animation: sparkle-animation 3s ease-in-out;
+  background: radial-gradient(circle, #fbbf24 0%, #f9fafb 100%);
+}
+
+:global(body.magic-rainbow) {
+  animation: rainbow-animation 3s ease-in-out;
+  background: linear-gradient(45deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #8b5cf6, #ec4899);
+  background-size: 300% 300%;
+}
+
+:global(body.magic-lightning) {
+  animation: lightning-animation 3s ease-in-out;
+  background: radial-gradient(circle, #3b82f6 0%, #f9fafb 100%);
+}
+
+@keyframes sparkle-animation {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes rainbow-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes lightning-animation {
+  0%, 100% { opacity: 1; }
+  10% { opacity: 0.3; }
+  20% { opacity: 1; }
+  30% { opacity: 0.5; }
+  40% { opacity: 1; }
 }
 </style>
