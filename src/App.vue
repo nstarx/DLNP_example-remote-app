@@ -27,6 +27,25 @@
         </div>
       </section>
 
+      <section class="jokes-section">
+        <h2 class="section-title">Need a Laugh? 😄</h2>
+        <div class="jokes-grid">
+          <button 
+            v-for="(button, index) in jokeButtons" 
+            :key="index"
+            @click="showJoke(index)"
+            class="joke-button"
+            :class="{ 'active': activeJoke === index }"
+          >
+            {{ button.label }}
+          </button>
+        </div>
+        <div v-if="currentJoke" class="joke-display">
+          <p class="joke-text">{{ currentJoke }}</p>
+          <button @click="clearJoke" class="clear-joke-btn">Clear Joke</button>
+        </div>
+      </section>
+
       <section v-if="chartData" class="charts-section">
         <div class="charts-grid">
           <LineChart
@@ -63,6 +82,49 @@ const analyticsConfig = inject('analyticsConfig', {})
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
+
+// Joke functionality
+const currentJoke = ref('')
+const activeJoke = ref(null)
+
+const jokeButtons = ref([
+  { label: '🎭 Comedy Central', jokes: [
+    "Why don't scientists trust atoms? Because they make up everything!",
+    "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+    "Why don't eggs tell jokes? They'd crack each other up!",
+    "I'm reading a book about anti-gravity. It's impossible to put down!"
+  ]},
+  { label: '🤖 Tech Humor', jokes: [
+    "Why do programmers prefer dark mode? Because light attracts bugs!",
+    "How many programmers does it take to change a light bulb? None, that's a hardware problem!",
+    "Why did the developer go broke? Because he used up all his cache!",
+    "There are only 10 types of people in the world: those who understand binary and those who don't."
+  ]},
+  { label: '🍕 Food Funnies', jokes: [
+    "Why did the cookie go to the doctor? Because it felt crumbly!",
+    "What do you call a sleeping bull? A bulldozer!",
+    "Why don't eggs tell jokes? They'd crack each other up!",
+    "What do you call a bear with no teeth? A gummy bear!"
+  ]},
+  { label: '🌟 Random Riddles', jokes: [
+    "What's orange and sounds like a parrot? A carrot!",
+    "Why don't skeletons fight each other? They don't have the guts!",
+    "What do you call a fish wearing a crown? A king fish!",
+    "Why did the math book look so sad? Because it had too many problems!"
+  ]}
+])
+
+const showJoke = (buttonIndex) => {
+  const jokes = jokeButtons.value[buttonIndex].jokes
+  const randomJoke = jokes[Math.floor(Math.random() * jokes.length)]
+  currentJoke.value = randomJoke
+  activeJoke.value = buttonIndex
+}
+
+const clearJoke = () => {
+  currentJoke.value = ''
+  activeJoke.value = null
+}
 
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
@@ -146,6 +208,97 @@ onMounted(() => {
   gap: 24px;
 }
 
+.jokes-section {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.jokes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.joke-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.joke-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.joke-button.active {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  transform: translateY(-1px);
+}
+
+.joke-display {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  margin-top: 20px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.joke-text {
+  font-size: 18px;
+  color: #2d3748;
+  margin: 0 0 16px 0;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.clear-joke-btn {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.clear-joke-btn:hover {
+  background: #c53030;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard {
     padding: 16px;
@@ -188,6 +341,24 @@ onMounted(() => {
   .error-message {
     background: #7f1d1d;
     color: #fecaca;
+  }
+  
+  .jokes-section {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .section-title {
+    color: #f9fafb;
+  }
+  
+  .joke-display {
+    background: #111827;
+    border-color: #374151;
+  }
+  
+  .joke-text {
+    color: #e5e7eb;
   }
 }
 </style>
