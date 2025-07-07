@@ -6,6 +6,12 @@
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
+        <button class="magic-button magic-button-1" @click="sayHelloWorld">
+          ✨ Hello World!
+        </button>
+        <button class="magic-button magic-button-2" @click="sayHelloWorld">
+          🎉 Hello World!
+        </button>
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
@@ -64,6 +70,10 @@ const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
+const sayHelloWorld = () => {
+  alert('Hello World! 🎉')
+}
+
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
@@ -103,6 +113,37 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.magic-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.magic-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.magic-button-1 {
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+}
+
+.magic-button-2 {
+  background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.magic-button-2:hover {
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
 }
 
 .dashboard-title {
