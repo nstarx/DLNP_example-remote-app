@@ -1,43 +1,52 @@
 <template>
-  <BaseCard>
-    <div class="chart-container">
-      <h3 class="chart-title">{{ title }}</h3>
-      <svg :viewBox="`0 0 ${width} ${height}`" class="chart">
-        <g>
-          <line
-            v-for="(_, i) in 5"
-            :key="`grid-${i}`"
-            :x1="padding"
-            :x2="width - padding"
-            :y1="padding + (i * (height - 2 * padding)) / 4"
-            :y2="padding + (i * (height - 2 * padding)) / 4"
-            class="grid-line"
-          />
-        </g>
-        <polyline
-          :points="points"
-          class="chart-line"
-          fill="none"
+  <div class="chart-container">
+    <h3 class="chart-title">{{ title }}</h3>
+    <svg :viewBox="`0 0 ${width} ${height}`" class="chart">
+      <g>
+        <line
+          v-for="(_, i) in 5"
+          :key="`grid-${i}`"
+          :x1="padding"
+          :x2="width - padding"
+          :y1="padding + (i * (height - 2 * padding)) / 4"
+          :y2="padding + (i * (height - 2 * padding)) / 4"
+          class="grid-line"
         />
-        <g>
-          <circle
-            v-for="(point, i) in chartPoints"
-            :key="`dot-${i}`"
-            :cx="point.x"
-            :cy="point.y"
-            r="4"
-            class="chart-dot"
-          />
-        </g>
-      </svg>
-    </div>
-  </BaseCard>
+      </g>
+      <polyline
+        :points="points"
+        class="chart-line"
+        fill="none"
+      />
+      <g>
+        <circle
+          v-for="(point, i) in chartPoints"
+          :key="`dot-${i}`"
+          :cx="point.x"
+          :cy="point.y"
+          r="4"
+          class="chart-dot"
+        />
+      </g>
+      <!-- Labels -->
+      <g>
+        <text
+          v-for="(label, i) in labels"
+          :key="`label-${i}`"
+          :x="padding + (i * (width - 2 * padding)) / (labels.length - 1)"
+          :y="height - padding + 20"
+          text-anchor="middle"
+          class="chart-label"
+        >
+          {{ label }}
+        </text>
+      </g>
+    </svg>
+  </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import BaseCard from '../common/BaseCard.vue'
-import { CHART_COLORS } from '@/data/constants'
 
 const props = defineProps({
   title: {
@@ -99,12 +108,17 @@ const points = computed(() => {
 }
 
 .chart-line {
-  stroke: v-bind('CHART_COLORS.primary');
+  stroke: #3b82f6;
   stroke-width: 2;
 }
 
 .chart-dot {
-  fill: v-bind('CHART_COLORS.primary');
+  fill: #3b82f6;
+}
+
+.chart-label {
+  font-size: 12px;
+  fill: #6b7280;
 }
 
 @media (prefers-color-scheme: dark) {

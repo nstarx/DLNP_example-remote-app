@@ -1,40 +1,36 @@
 <template>
-  <BaseCard>
-    <div class="chart-container">
-      <h3 class="chart-title">{{ title }}</h3>
-      <svg :viewBox="`0 0 ${width} ${height}`" class="chart">
-        <g>
-          <rect
-            v-for="(bar, i) in bars"
-            :key="`bar-${i}`"
-            :x="bar.x"
-            :y="bar.y"
-            :width="barWidth"
-            :height="bar.height"
-            class="chart-bar"
-          />
-        </g>
-        <g>
-          <text
-            v-for="(label, i) in labels"
-            :key="`label-${i}`"
-            :x="bars[i].x + barWidth / 2"
-            :y="height - 10"
-            class="chart-label"
-            text-anchor="middle"
-          >
-            {{ label }}
-          </text>
-        </g>
-      </svg>
-    </div>
-  </BaseCard>
+  <div class="chart-container">
+    <h3 class="chart-title">{{ title }}</h3>
+    <svg :viewBox="`0 0 ${width} ${height}`" class="chart">
+      <g>
+        <rect
+          v-for="(bar, i) in bars"
+          :key="`bar-${i}`"
+          :x="bar.x"
+          :y="bar.y"
+          :width="barWidth"
+          :height="bar.height"
+          class="chart-bar"
+        />
+      </g>
+      <g>
+        <text
+          v-for="(label, i) in labels"
+          :key="`label-${i}`"
+          :x="bars[i].x + barWidth / 2"
+          :y="height - 10"
+          class="chart-label"
+          text-anchor="middle"
+        >
+          {{ label.length > 8 ? label.substring(0, 8) + '...' : label }}
+        </text>
+      </g>
+    </svg>
+  </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import BaseCard from '../common/BaseCard.vue'
-import { CHART_COLORS } from '@/data/constants'
 
 const props = defineProps({
   title: {
@@ -89,12 +85,12 @@ const bars = computed(() => {
 }
 
 .chart-bar {
-  fill: v-bind('CHART_COLORS.primary');
+  fill: #10b981;
   transition: fill 0.3s ease;
 }
 
 .chart-bar:hover {
-  fill: v-bind('CHART_COLORS.accent');
+  fill: #059669;
 }
 
 .chart-label {
