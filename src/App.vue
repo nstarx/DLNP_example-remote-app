@@ -2,46 +2,68 @@
   <div class="dashboard">
     <header class="dashboard-header">
       <div class="header-left">
-        <h1 class="dashboard-title">Analytics Dashboard</h1>
+        <h1 class="dashboard-title">IT Operations Dashboard</h1>
+        <nav class="dashboard-nav">
+          <button 
+            class="nav-button" 
+            :class="{ active: currentView === 'analytics' }"
+            @click="currentView = 'analytics'"
+          >
+            Analytics
+          </button>
+          <button 
+            class="nav-button" 
+            :class="{ active: currentView === 'heatmap' }"
+            @click="currentView = 'heatmap'"
+          >
+            Experience Heatmap
+          </button>
+        </nav>
       </div>
       <div class="header-right">
-        <PeriodSelector v-model="selectedPeriod" />
+        <PeriodSelector v-if="currentView === 'analytics'" v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
 
-    <LoadingSpinner v-if="loading" />
-    
-    <div v-else-if="error" class="error-message">
-      {{ error }}
+    <!-- Analytics View -->
+    <div v-if="currentView === 'analytics'">
+      <LoadingSpinner v-if="loading" />
+      
+      <div v-else-if="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <div v-else class="dashboard-content">
+        <section class="metrics-section">
+          <div class="metrics-grid">
+            <MetricCard
+              v-for="metric in metrics"
+              :key="metric.label"
+              :metric="metric"
+            />
+          </div>
+        </section>
+
+        <section v-if="chartData" class="charts-section">
+          <div class="charts-grid">
+            <LineChart
+              title="Page Views Trend"
+              :data="chartData.pageViews"
+              :labels="chartData.labels"
+            />
+            <BarChart
+              title="Traffic Sources"
+              :data="barChartData.values"
+              :labels="barChartData.labels"
+            />
+          </div>
+        </section>
+      </div>
     </div>
 
-    <div v-else class="dashboard-content">
-      <section class="metrics-section">
-        <div class="metrics-grid">
-          <MetricCard
-            v-for="metric in metrics"
-            :key="metric.label"
-            :metric="metric"
-          />
-        </div>
-      </section>
-
-      <section v-if="chartData" class="charts-section">
-        <div class="charts-grid">
-          <LineChart
-            title="Page Views Trend"
-            :data="chartData.pageViews"
-            :labels="chartData.labels"
-          />
-          <BarChart
-            title="Traffic Sources"
-            :data="barChartData.values"
-            :labels="barChartData.labels"
-          />
-        </div>
-      </section>
-    </div>
+    <!-- Experience Heatmap View -->
+    <ExperienceHeatmap v-else-if="currentView === 'heatmap'" />
 
     <DocumentationModal v-model="showDocs" />
   </div>
@@ -58,10 +80,12 @@ import BarChart from '@/components/charts/BarChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import DocumentationButton from '@/components/common/DocumentationButton.vue'
 import DocumentationModal from '@/components/common/DocumentationModal.vue'
+import ExperienceHeatmap from '@/components/ExperienceHeatmap.vue'
 
 const analyticsConfig = inject('analyticsConfig', {})
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
+const currentView = ref('heatmap') // Start with heatmap view as default
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
 watch(selectedPeriod, (newPeriod) => {
@@ -109,7 +133,35 @@ onMounted(() => {
   font-size: 32px;
   font-weight: 700;
   color: #111827;
-  margin: 0;
+  margin: 0 0 16px 0;
+}
+
+.dashboard-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-button {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.nav-button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
 }
 
 .dashboard-content {
@@ -183,6 +235,23 @@ onMounted(() => {
   
   .dashboard-title {
     color: #f9fafb;
+  }
+  
+  .nav-button {
+    background: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+  }
+  
+  .nav-button:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+  }
+  
+  .nav-button.active {
+    background: #60a5fa;
+    border-color: #60a5fa;
+    color: #111827;
   }
   
   .error-message {
