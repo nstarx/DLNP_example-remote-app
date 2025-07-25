@@ -1,193 +1,361 @@
 <template>
-  <div class="dashboard">
-    <header class="dashboard-header">
+  <div class="command-center">
+    <header class="command-center-header">
       <div class="header-left">
-        <h1 class="dashboard-title">Analytics Dashboard</h1>
+        <h1 class="command-center-title">IT Automation Command Center</h1>
+        <div class="system-status">
+          <span class="status-indicator" :class="systemHealth.status"></span>
+          All Systems {{ systemHealth.label }}
+        </div>
       </div>
       <div class="header-right">
-        <PeriodSelector v-model="selectedPeriod" />
-        <DocumentationButton @click="showDocs = true" />
+        <button class="header-btn secondary" @click="refreshData">
+          <span class="btn-icon">↻</span>
+          Refresh
+        </button>
+        <button class="header-btn primary" @click="showSettings = true">
+          Settings
+        </button>
       </div>
     </header>
 
     <LoadingSpinner v-if="loading" />
     
     <div v-else-if="error" class="error-message">
+      <span class="error-icon">⚠</span>
       {{ error }}
     </div>
 
-    <div v-else class="dashboard-content">
-      <section class="metrics-section">
-        <div class="metrics-grid">
-          <MetricCard
-            v-for="metric in metrics"
-            :key="metric.label"
-            :metric="metric"
+    <div v-else class="command-center-content">
+      <!-- KPI Dashboard -->
+      <section class="kpi-section">
+        <div class="kpi-grid">
+          <KpiCard
+            v-for="kpi in kpis"
+            :key="kpi.id"
+            :kpi="kpi"
           />
         </div>
       </section>
 
-      <section v-if="chartData" class="charts-section">
-        <div class="charts-grid">
-          <LineChart
-            title="Page Views Trend"
-            :data="chartData.pageViews"
-            :labels="chartData.labels"
+      <!-- Main Content Grid -->
+      <div class="main-content-grid">
+        <!-- Active Automations -->
+        <section class="automations-section">
+          <ActiveAutomations 
+            :automations="activeAutomations"
+            @action="handleAutomationAction"
           />
-          <BarChart
-            title="Traffic Sources"
-            :data="barChartData.values"
-            :labels="barChartData.labels"
-          />
-        </div>
+        </section>
+
+        <!-- AI Insights Panel -->
+        <section class="insights-section">
+          <AiInsights :insights="aiInsights" @approve="handleInsightApproval" />
+        </section>
+      </div>
+
+      <!-- Activity Log -->
+      <section class="activity-section">
+        <ActivityLog 
+          :activities="recentActivities"
+          @filter="handleActivityFilter"
+        />
+      </section>
+
+      <!-- Policy Controls -->
+      <section class="policy-section">
+        <PolicyControls 
+          :policies="policies"
+          @update="handlePolicyUpdate"
+        />
       </section>
     </div>
 
-    <DocumentationModal v-model="showDocs" />
+    <SettingsModal v-model="showSettings" />
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, inject } from 'vue'
-import { useAnalytics } from '@/composables/useAnalytics'
-import { barChartData } from '@/data/mockData'
-import PeriodSelector from '@/components/dashboard/PeriodSelector.vue'
-import MetricCard from '@/components/dashboard/MetricCard.vue'
-import LineChart from '@/components/charts/LineChart.vue'
-import BarChart from '@/components/charts/BarChart.vue'
+import { ref, onMounted, inject } from 'vue'
+import { useAutomationCenter } from '@/composables/useAutomationCenter'
+import KpiCard from '@/components/automation/KpiCard.vue'
+import ActiveAutomations from '@/components/automation/ActiveAutomations.vue'
+import ActivityLog from '@/components/automation/ActivityLog.vue'
+import AiInsights from '@/components/automation/AiInsights.vue'
+import PolicyControls from '@/components/automation/PolicyControls.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import DocumentationButton from '@/components/common/DocumentationButton.vue'
-import DocumentationModal from '@/components/common/DocumentationModal.vue'
+import SettingsModal from '@/components/automation/SettingsModal.vue'
 
-const analyticsConfig = inject('analyticsConfig', {})
-const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
-const showDocs = ref(false)
-const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
+const automationConfig = inject('automationConfig', {})
+const showSettings = ref(false)
 
-watch(selectedPeriod, (newPeriod) => {
-  fetchAnalytics(newPeriod)
-})
+const {
+  kpis,
+  activeAutomations,
+  recentActivities,
+  aiInsights,
+  policies,
+  systemHealth,
+  loading,
+  error,
+  refreshData,
+  handleAutomationAction,
+  handleActivityFilter,
+  handleInsightApproval,
+  handlePolicyUpdate
+} = useAutomationCenter()
 
 onMounted(() => {
-  fetchAnalytics(selectedPeriod.value)
+  refreshData()
   
-  if (analyticsConfig.refreshInterval) {
+  // Auto-refresh every 30 seconds
+  if (automationConfig.refreshInterval !== false) {
     setInterval(() => {
-      fetchAnalytics(selectedPeriod.value)
-    }, analyticsConfig.refreshInterval)
+      refreshData()
+    }, automationConfig.refreshInterval || 30000)
   }
 })
 </script>
 
 <style scoped>
-.dashboard {
+/* Enterprise Design System Variables */
+.command-center {
+  --color-primary: #0078d4;
+  --color-primary-hover: #106ebe;
+  --color-secondary: #6b7280;
+  --color-success: #107c10;
+  --color-warning: #ff8c00;
+  --color-danger: #d13438;
+  --color-surface: #ffffff;
+  --color-surface-2: #f8f9fa;
+  --color-surface-3: #e5e7eb;
+  --color-text: #323130;
+  --color-text-secondary: #605e5c;
+  --color-border: #d1d5db;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --border-radius: 4px;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  
   min-height: 100vh;
-  background: #f9fafb;
-  padding: 24px;
+  background: var(--color-surface-2);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  padding: 0;
 }
 
-.dashboard-header {
+/* Header */
+.command-center-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
-  gap: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
 }
 
 .header-left {
   display: flex;
   align-items: center;
+  gap: 16px;
+}
+
+.command-center-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-indicator.operational {
+  background: var(--color-success);
+}
+
+.status-indicator.warning {
+  background: var(--color-warning);
+}
+
+.status-indicator.critical {
+  background: var(--color-danger);
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
-.dashboard-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
+/* Buttons */
+.header-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
 }
 
-.dashboard-content {
+.header-btn:hover {
+  background: var(--color-surface-2);
+  border-color: var(--color-secondary);
+}
+
+.header-btn.primary {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.header-btn.primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.btn-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Content Layout */
+.command-center-content {
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 32px;
-}
-
-.error-message {
-  background: #fee;
-  color: #c00;
-  padding: 16px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.metrics-section {
-  width: 100%;
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-}
-
-.charts-section {
-  width: 100%;
-}
-
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 24px;
 }
 
-@media (max-width: 768px) {
-  .dashboard {
-    padding: 16px;
+/* KPI Section */
+.kpi-section {
+  width: 100%;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Main Content Grid */
+.main-content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.automations-section,
+.insights-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Full-width sections */
+.activity-section,
+.policy-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  color: var(--color-danger);
+  padding: 16px 24px;
+  border-radius: var(--border-radius);
+  border: 1px solid #fecaca;
+  margin: 24px;
+  font-weight: 500;
+}
+
+.error-icon {
+  font-size: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-content-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .dashboard-header {
+}
+
+@media (max-width: 768px) {
+  .command-center-header {
+    padding: 12px 16px;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     align-items: stretch;
   }
   
   .header-left,
   .header-right {
     width: 100%;
+    justify-content: space-between;
   }
   
-  .header-right {
-    flex-wrap: wrap;
+  .command-center-title {
+    font-size: 18px;
   }
   
-  .dashboard-title {
-    font-size: 24px;
+  .command-center-content {
+    padding: 16px;
+    gap: 16px;
   }
   
-  .metrics-grid,
-  .charts-grid {
+  .kpi-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .dashboard {
-    background: #111827;
+/* High contrast accessibility */
+@media (prefers-contrast: high) {
+  .command-center {
+    --color-border: #000000;
+    --color-text-secondary: #000000;
   }
-  
-  .dashboard-title {
-    color: #f9fafb;
-  }
-  
-  .error-message {
-    background: #7f1d1d;
-    color: #fecaca;
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .header-btn {
+    transition: none;
   }
 }
 </style>
