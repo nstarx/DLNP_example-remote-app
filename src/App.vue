@@ -43,6 +43,13 @@
       </section>
     </div>
 
+
+
+<MockTable />
+
+
+
+
     <DocumentationModal v-model="showDocs" />
   </div>
 </template>
@@ -58,11 +65,13 @@ import BarChart from '@/components/charts/BarChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import DocumentationButton from '@/components/common/DocumentationButton.vue'
 import DocumentationModal from '@/components/common/DocumentationModal.vue'
+import MockTable from '@/components/MockTable.vue'
 
 const analyticsConfig = inject('analyticsConfig', {})
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
+
 
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
