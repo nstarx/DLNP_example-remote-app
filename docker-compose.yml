@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  ai-insurance-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - VITE_AI_PROVIDER=aws
+      - VITE_AI_REGION=us-east-1
+      - VITE_CACHE_TTL=300000
+      - VITE_BATCH_SIZE=10
+    networks:
+      - insurance-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis for caching (optional)
+  redis-cache:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - insurance-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+
+  # Nginx for load balancing (optional)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    networks:
+      - insurance-network
+    depends_on:
+      - ai-insurance-dashboard
+    restart: unless-stopped
+
+networks:
+  insurance-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local

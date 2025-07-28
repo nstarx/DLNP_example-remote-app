@@ -1,193 +1,42 @@
 <template>
-  <div class="dashboard">
-    <header class="dashboard-header">
-      <div class="header-left">
-        <h1 class="dashboard-title">Analytics Dashboard</h1>
-      </div>
-      <div class="header-right">
-        <PeriodSelector v-model="selectedPeriod" />
-        <DocumentationButton @click="showDocs = true" />
-      </div>
-    </header>
-
-    <LoadingSpinner v-if="loading" />
-    
-    <div v-else-if="error" class="error-message">
-      {{ error }}
-    </div>
-
-    <div v-else class="dashboard-content">
-      <section class="metrics-section">
-        <div class="metrics-grid">
-          <MetricCard
-            v-for="metric in metrics"
-            :key="metric.label"
-            :metric="metric"
-          />
-        </div>
-      </section>
-
-      <section v-if="chartData" class="charts-section">
-        <div class="charts-grid">
-          <LineChart
-            title="Page Views Trend"
-            :data="chartData.pageViews"
-            :labels="chartData.labels"
-          />
-          <BarChart
-            title="Traffic Sources"
-            :data="barChartData.values"
-            :labels="barChartData.labels"
-          />
-        </div>
-      </section>
-    </div>
-
-    <DocumentationModal v-model="showDocs" />
+  <div class="insurance-dashboard-app">
+    <DashboardRouter />
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, inject } from 'vue'
-import { useAnalytics } from '@/composables/useAnalytics'
-import { barChartData } from '@/data/mockData'
-import PeriodSelector from '@/components/dashboard/PeriodSelector.vue'
-import MetricCard from '@/components/dashboard/MetricCard.vue'
-import LineChart from '@/components/charts/LineChart.vue'
-import BarChart from '@/components/charts/BarChart.vue'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import DocumentationButton from '@/components/common/DocumentationButton.vue'
-import DocumentationModal from '@/components/common/DocumentationModal.vue'
+import { onMounted } from 'vue'
+import { useAuth } from '@/composables/useAuth'
+import DashboardRouter from '@/components/dashboard/DashboardRouter.vue'
 
-const analyticsConfig = inject('analyticsConfig', {})
-const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
-const showDocs = ref(false)
-const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
-
-watch(selectedPeriod, (newPeriod) => {
-  fetchAnalytics(newPeriod)
-})
+const { initAuth } = useAuth()
 
 onMounted(() => {
-  fetchAnalytics(selectedPeriod.value)
-  
-  if (analyticsConfig.refreshInterval) {
-    setInterval(() => {
-      fetchAnalytics(selectedPeriod.value)
-    }, analyticsConfig.refreshInterval)
-  }
+  initAuth()
 })
 </script>
 
 <style scoped>
-.dashboard {
+.insurance-dashboard-app {
+  width: 100%;
   min-height: 100vh;
-  background: #f9fafb;
-  padding: 24px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1e293b;
+  background: #f8fafc;
 }
 
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-  gap: 24px;
+/* Global font loading for better typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.dashboard-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #111827;
+body {
   margin: 0;
-}
-
-.dashboard-content {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-.error-message {
-  background: #fee;
-  color: #c00;
-  padding: 16px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.metrics-section {
-  width: 100%;
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-}
-
-.charts-section {
-  width: 100%;
-}
-
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 24px;
-}
-
-@media (max-width: 768px) {
-  .dashboard {
-    padding: 16px;
-  }
-  
-  .dashboard-header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-  
-  .header-left,
-  .header-right {
-    width: 100%;
-  }
-  
-  .header-right {
-    flex-wrap: wrap;
-  }
-  
-  .dashboard-title {
-    font-size: 24px;
-  }
-  
-  .metrics-grid,
-  .charts-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .dashboard {
-    background: #111827;
-  }
-  
-  .dashboard-title {
-    color: #f9fafb;
-  }
-  
-  .error-message {
-    background: #7f1d1d;
-    color: #fecaca;
-  }
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 </style>
