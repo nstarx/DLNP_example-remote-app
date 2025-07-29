@@ -8,6 +8,9 @@
         <button class="hello-world-btn" @click="showHelloWorld">
           Hello World
         </button>
+        <button class="refresh-btn" @click="refreshData">
+          Refresh Data
+        </button>
         <PeriodSelector v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
       </div>
@@ -71,6 +74,10 @@ const showHelloWorld = () => {
   alert('Hello World!')
 }
 
+const refreshData = () => {
+  fetchAnalytics(selectedPeriod.value)
+}
+
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
@@ -130,6 +137,26 @@ onMounted(() => {
 
 .hello-world-btn:active {
   background: #1d4ed8;
+}
+
+.refresh-btn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.refresh-btn:hover {
+  background: #059669;
+}
+
+.refresh-btn:active {
+  background: #047857;
 }
 
 .dashboard-title {
@@ -227,6 +254,18 @@ onMounted(() => {
   
   .hello-world-btn:active {
     background: #1e3a8a;
+  }
+  
+  .refresh-btn {
+    background: #047857;
+  }
+  
+  .refresh-btn:hover {
+    background: #065f46;
+  }
+  
+  .refresh-btn:active {
+    background: #064e3b;
   }
 }
 </style>
