@@ -5,6 +5,15 @@
         <h1 class="dashboard-title">Analytics Dashboard</h1>
       </div>
       <div class="header-right">
+        <button 
+          class="refresh-button"
+          @click="handleRefresh"
+          :disabled="loading"
+          title="Refresh data"
+        >
+          <span class="refresh-icon">↻</span>
+          Refresh
+        </button>
         <PeriodSelector v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
       </div>
@@ -64,6 +73,10 @@ const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
+const handleRefresh = () => {
+  fetchAnalytics(selectedPeriod.value)
+}
+
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
@@ -110,6 +123,44 @@ onMounted(() => {
   font-weight: 700;
   color: #111827;
   margin: 0;
+}
+
+.refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.refresh-button:active {
+  transform: translateY(0);
+}
+
+.refresh-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.refresh-icon {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.refresh-button:hover:not(:disabled) .refresh-icon {
+  transform: rotate(180deg);
 }
 
 .dashboard-content {
@@ -183,6 +234,18 @@ onMounted(() => {
   
   .dashboard-title {
     color: #f9fafb;
+  }
+  
+  .refresh-button {
+    background: #1d4ed8;
+  }
+  
+  .refresh-button:hover:not(:disabled) {
+    background: #1e40af;
+  }
+  
+  .refresh-button:disabled {
+    background: #4b5563;
   }
   
   .error-message {
