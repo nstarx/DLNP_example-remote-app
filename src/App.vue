@@ -14,6 +14,15 @@
           <span class="refresh-icon">↻</span>
           Refresh
         </button>
+        <button 
+          class="export-button"
+          @click="handleExport"
+          :disabled="loading"
+          title="Export analytics data"
+        >
+          <span class="export-icon">↓</span>
+          Export
+        </button>
         <PeriodSelector v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
       </div>
@@ -75,6 +84,28 @@ const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
 const handleRefresh = () => {
   fetchAnalytics(selectedPeriod.value)
+}
+
+const handleExport = () => {
+  // Export analytics data as CSV or JSON
+  const exportData = {
+    period: selectedPeriod.value,
+    metrics: metrics.value,
+    chartData: chartData.value,
+    exportDate: new Date().toISOString()
+  }
+  
+  const dataStr = JSON.stringify(exportData, null, 2)
+  const dataBlob = new Blob([dataStr], { type: 'application/json' })
+  const url = URL.createObjectURL(dataBlob)
+  
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `analytics-${selectedPeriod.value}-${new Date().toISOString().split('T')[0]}.json`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
 }
 
 watch(selectedPeriod, (newPeriod) => {
@@ -163,6 +194,44 @@ onMounted(() => {
   transform: rotate(180deg);
 }
 
+.export-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.export-button:hover:not(:disabled) {
+  background: #047857;
+  transform: translateY(-1px);
+}
+
+.export-button:active {
+  transform: translateY(0);
+}
+
+.export-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.export-icon {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.export-button:hover:not(:disabled) .export-icon {
+  transform: translateY(2px);
+}
+
 .dashboard-content {
   display: flex;
   flex-direction: column;
@@ -245,6 +314,18 @@ onMounted(() => {
   }
   
   .refresh-button:disabled {
+    background: #4b5563;
+  }
+  
+  .export-button {
+    background: #065f46;
+  }
+  
+  .export-button:hover:not(:disabled) {
+    background: #064e3b;
+  }
+  
+  .export-button:disabled {
     background: #4b5563;
   }
   
