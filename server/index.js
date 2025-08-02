@@ -146,6 +146,33 @@ app.get('/api/recent-activity', async (req, res) => {
   res.json(activities);
 });
 
+// Documentation endpoints
+app.get('/api/docs', async (req, res) => {
+  try {
+    const response = await axios.get(`${FASTAPI_URL}/api/docs`);
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching docs:', error.message);
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to fetch documentation list',
+      message: error.message
+    });
+  }
+});
+
+app.get('/api/docs/:docName', async (req, res) => {
+  try {
+    const response = await axios.get(`${FASTAPI_URL}/api/docs/${req.params.docName}`);
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching doc content:', error.message);
+    res.status(error.response?.status || 500).json({
+      error: 'Failed to fetch documentation content',
+      message: error.message
+    });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

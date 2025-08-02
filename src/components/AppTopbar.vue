@@ -3,6 +3,8 @@ import { useLayout } from "../composables/useLayout";
 import AppConfig from "./AppConfig.vue";
 
 const { isDarkMode, toggleDarkMode } = useLayout();
+
+defineEmits(['show-docs']);
 </script>
 
 <template>
@@ -36,6 +38,14 @@ const { isDarkMode, toggleDarkMode } = useLayout();
                 >
             </div>
             <div class="flex items-center gap-2">
+                <Button
+                    icon="pi pi-book"
+                    text
+                    rounded
+                    aria-label="Documentation"
+                    @click="$emit('show-docs')"
+                    v-tooltip.bottom="'Documentation'"
+                />
                 <button
                     type="button"
                     class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-100 dark:hover:bg-surface-800 transition-all text-surface-900 dark:text-surface-0 focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0 dark:focus-visible:ring-offset-surface-950"

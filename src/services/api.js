@@ -77,6 +77,15 @@ class ApiService {
   async checkHealth() {
     return this.request('/health');
   }
+
+  // Documentation endpoints
+  async getDocs() {
+    return this.request('/api/docs');
+  }
+
+  async getDocContent(docName) {
+    return this.request(`/api/docs/${docName}`);
+  }
 }
 
 export default new ApiService();

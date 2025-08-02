@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 import uvicorn
+import os
+from pathlib import Path
 
 app = FastAPI(title="Dashboard API", version="1.0.0")
 
@@ -30,6 +32,15 @@ class StatsResponse(BaseModel):
     active_users: int
     new_orders: int
     revenue_growth: float
+
+class DocFile(BaseModel):
+    name: str
+    path: str
+    size: int
+
+class DocContent(BaseModel):
+    name: str
+    content: str
 
 # In-memory storage for demo
 items_db: List[Item] = []
@@ -98,6 +109,40 @@ async def delete_item(item_id: int):
             del items_db[idx]
             return {"message": "Item deleted successfully"}
     raise HTTPException(status_code=404, detail="Item not found")
+
+@app.get("/api/docs", response_model=List[DocFile])
+async def get_docs():
+    """Get list of documentation files"""
+    docs_path = Path(__file__).parent.parent / "docs"
+    doc_files = []
+    
+    if docs_path.exists():
+        for file_path in docs_path.glob("*.md"):
+            doc_files.append(DocFile(
+                name=file_path.stem.replace("-", " ").title(),
+                path=file_path.name,
+                size=file_path.stat().st_size
+            ))
+    
+    return doc_files
+
+@app.get("/api/docs/{doc_name}", response_model=DocContent)
+async def get_doc_content(doc_name: str):
+    """Get content of a specific documentation file"""
+    docs_path = Path(__file__).parent.parent / "docs"
+    file_path = docs_path / doc_name
+    
+    if not file_path.exists() or not file_path.suffix == ".md":
+        raise HTTPException(status_code=404, detail="Documentation file not found")
+    
+    try:
+        content = file_path.read_text(encoding="utf-8")
+        return DocContent(
+            name=file_path.stem.replace("-", " ").title(),
+            content=content
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading file: {str(e)}")
 
 # Add some sample data on startup
 @app.on_event("startup")
