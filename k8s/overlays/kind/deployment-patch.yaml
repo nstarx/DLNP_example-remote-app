@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  namespace: claude-test
+spec:
+  template:
+    spec:
+      containers:
+      - name: dashboard
+        imagePullPolicy: Always

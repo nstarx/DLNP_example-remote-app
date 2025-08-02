@@ -1,0 +1,79 @@
+# Simple all-in-one Dockerfile
+FROM node:20-slim
+
+# Install Python and system dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
+    nginx \
+    curl \
+    procps \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create Python symlink
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# Set working directory
+WORKDIR /app
+
+# Copy all application files
+COPY . .
+
+# Install frontend dependencies and build
+# Set VITE_API_URL to empty for production (relative URLs)
+RUN VITE_API_URL= npm ci && npm run build
+
+# Install Node.js server dependencies
+WORKDIR /app/server
+RUN npm ci --only=production
+
+# Install Python dependencies
+WORKDIR /app/backend
+RUN pip install --break-system-packages -r requirements.txt
+
+# Setup nginx
+RUN rm /etc/nginx/sites-enabled/default
+COPY nginx-simple.conf /etc/nginx/sites-enabled/default
+
+# Create a simple startup script
+WORKDIR /app
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+# Start nginx\n\
+service nginx start\n\
+\n\
+# Start FastAPI in background\n\
+cd /app/backend\n\
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 &\n\
+FASTAPI_PID=$!\n\
+\n\
+# Start Node.js server in background\n\
+cd /app/server\n\
+PORT=3001 FASTAPI_URL=http://localhost:8000 node index.js &\n\
+NODE_PID=$!\n\
+\n\
+# Function to handle shutdown\n\
+shutdown() {\n\
+    echo "Shutting down services..."\n\
+    kill $FASTAPI_PID $NODE_PID 2>/dev/null || true\n\
+    service nginx stop\n\
+    exit 0\n\
+}\n\
+\n\
+# Trap signals\n\
+trap shutdown SIGTERM SIGINT\n\
+\n\
+# Wait for any process to exit\n\
+wait -n\n\
+\n\
+# Exit with status of process that exited first\n\
+exit $?' > /app/start-all.sh && chmod +x /app/start-all.sh
+
+# Expose port 80
+EXPOSE 80
+
+# Start all services
+CMD ["/app/start-all.sh"]

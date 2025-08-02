@@ -1,0 +1,16 @@
+# Simple docker-compose using the all-in-one container
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.all-in-one
+    container_name: dashboard-all-in-one
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - FASTAPI_URL=http://localhost:8000
+      - VITE_API_URL=http://localhost:3001
+    restart: unless-stopped
