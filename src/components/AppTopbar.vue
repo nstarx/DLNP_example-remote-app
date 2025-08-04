@@ -5,6 +5,12 @@ import AppConfig from "./AppConfig.vue";
 const { isDarkMode, toggleDarkMode } = useLayout();
 
 defineEmits(['show-docs']);
+
+const handleAddItem = () => {
+    // Handle add item functionality
+    console.log('Add Item button clicked');
+    alert('Add Item functionality - ready to implement!');
+};
 </script>
 
 <template>
@@ -38,6 +44,13 @@ defineEmits(['show-docs']);
                 >
             </div>
             <div class="flex items-center gap-2">
+                <Button
+                    icon="pi pi-plus"
+                    label="Add Item"
+                    severity="success"
+                    @click="handleAddItem"
+                    v-tooltip.bottom="'Add new item'"
+                />
                 <Button
                     icon="pi pi-book"
                     text
