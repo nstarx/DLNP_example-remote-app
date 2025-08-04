@@ -17,11 +17,21 @@ const handleShowDocs = () => {
 const handleCloseDocs = () => {
     showDocs.value = false;
 };
+
+const handleRefresh = () => {
+    // Force re-render of dashboard components by triggering refresh
+    console.log('Refreshing dashboard...');
+    // You can add specific refresh logic here, such as:
+    // - Reloading data from API
+    // - Emitting events to child components
+    // - Showing a toast notification
+    window.location.reload();
+};
 </script>
 
 <template>
     <div class="bg-surface-50 dark:bg-surface-950 min-h-screen p-8 flex flex-col gap-6">
-        <AppTopbar @show-docs="handleShowDocs" />
+        <AppTopbar @show-docs="handleShowDocs" @refresh="handleRefresh" />
         <div v-if="!showDocs" class="flex flex-col w-full max-w-7xl mx-auto gap-6 flex-1">
             <StatsWidget />
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

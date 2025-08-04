@@ -4,7 +4,7 @@ import AppConfig from "./AppConfig.vue";
 
 const { isDarkMode, toggleDarkMode } = useLayout();
 
-defineEmits(['show-docs']);
+defineEmits(['show-docs', 'refresh']);
 </script>
 
 <template>
@@ -45,6 +45,14 @@ defineEmits(['show-docs']);
                     aria-label="Documentation"
                     @click="$emit('show-docs')"
                     v-tooltip.bottom="'Documentation'"
+                />
+                <Button
+                    icon="pi pi-refresh"
+                    text
+                    rounded
+                    aria-label="Refresh"
+                    @click="$emit('refresh')"
+                    v-tooltip.bottom="'Refresh Dashboard'"
                 />
                 <button
                     type="button"
