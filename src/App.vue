@@ -7,6 +7,9 @@
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
+        <button class="action-button" @click="handleButtonClick">
+          Action Button
+        </button>
       </div>
     </header>
 
@@ -64,6 +67,11 @@ const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
+const handleButtonClick = () => {
+  console.log('Button clicked!')
+  // Add your custom logic here
+}
+
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
@@ -92,6 +100,26 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 32px;
   gap: 24px;
+}
+
+.action-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.action-button:hover {
+  background: #2563eb;
+}
+
+.action-button:active {
+  background: #1d4ed8;
 }
 
 .header-left {
@@ -188,6 +216,18 @@ onMounted(() => {
   .error-message {
     background: #7f1d1d;
     color: #fecaca;
+  }
+  
+  .action-button {
+    background: #4f46e5;
+  }
+  
+  .action-button:hover {
+    background: #4338ca;
+  }
+  
+  .action-button:active {
+    background: #3730a3;
   }
 }
 </style>
