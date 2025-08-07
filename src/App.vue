@@ -6,6 +6,9 @@
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
+        <button class="refresh-button" @click="handleRefresh" :disabled="loading">
+          {{ loading ? 'Refreshing...' : 'Refresh' }}
+        </button>
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
@@ -64,6 +67,10 @@ const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
+const handleRefresh = () => {
+  fetchAnalytics(selectedPeriod.value)
+}
+
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
@@ -110,6 +117,27 @@ onMounted(() => {
   font-weight: 700;
   color: #111827;
   margin: 0;
+}
+
+.refresh-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.refresh-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
 }
 
 .dashboard-content {
@@ -188,6 +216,18 @@ onMounted(() => {
   .error-message {
     background: #7f1d1d;
     color: #fecaca;
+  }
+  
+  .refresh-button {
+    background: #3b82f6;
+  }
+  
+  .refresh-button:hover:not(:disabled) {
+    background: #2563eb;
+  }
+  
+  .refresh-button:disabled {
+    background: #4b5563;
   }
 }
 </style>
