@@ -2,45 +2,57 @@
   <div class="dashboard">
     <header class="dashboard-header">
       <div class="header-left">
-        <h1 class="dashboard-title">Analytics Dashboard</h1>
+        <h1 class="dashboard-title">{{ dashboardTitle }}</h1>
       </div>
       <div class="header-right">
-        <PeriodSelector v-model="selectedPeriod" />
+        <DashboardSelector v-model="selectedDashboard" />
+        <PeriodSelector v-if="selectedDashboard === 'analytics'" v-model="selectedPeriod" />
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
 
-    <LoadingSpinner v-if="loading" />
-    
-    <div v-else-if="error" class="error-message">
-      {{ error }}
-    </div>
-
-    <div v-else class="dashboard-content">
-      <section class="metrics-section">
-        <div class="metrics-grid">
-          <MetricCard
-            v-for="metric in metrics"
-            :key="metric.label"
-            :metric="metric"
-          />
+    <div class="dashboard-content">
+      <!-- Executive Dashboard -->
+      <ExecutiveDashboard v-if="selectedDashboard === 'executive'" />
+      
+      <!-- CIO Dashboard -->
+      <CIODashboard v-else-if="selectedDashboard === 'cio'" />
+      
+      <!-- Original Analytics Dashboard -->
+      <div v-else>
+        <LoadingSpinner v-if="loading" />
+        
+        <div v-else-if="error" class="error-message">
+          {{ error }}
         </div>
-      </section>
 
-      <section v-if="chartData" class="charts-section">
-        <div class="charts-grid">
-          <LineChart
-            title="Page Views Trend"
-            :data="chartData.pageViews"
-            :labels="chartData.labels"
-          />
-          <BarChart
-            title="Traffic Sources"
-            :data="barChartData.values"
-            :labels="barChartData.labels"
-          />
+        <div v-else class="analytics-content">
+          <section class="metrics-section">
+            <div class="metrics-grid">
+              <MetricCard
+                v-for="metric in metrics"
+                :key="metric.label"
+                :metric="metric"
+              />
+            </div>
+          </section>
+
+          <section v-if="chartData" class="charts-section">
+            <div class="charts-grid">
+              <LineChart
+                title="Page Views Trend"
+                :data="chartData.pageViews"
+                :labels="chartData.labels"
+              />
+              <BarChart
+                title="Traffic Sources"
+                :data="barChartData.values"
+                :labels="barChartData.labels"
+              />
+            </div>
+          </section>
         </div>
-      </section>
+      </div>
     </div>
 
     <DocumentationModal v-model="showDocs" />
@@ -48,37 +60,62 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, inject } from 'vue'
+import { ref, watch, onMounted, inject, computed } from 'vue'
 import { useAnalytics } from '@/composables/useAnalytics'
 import { barChartData } from '@/data/mockData'
+
+// Components
 import PeriodSelector from '@/components/dashboard/PeriodSelector.vue'
+import DashboardSelector from '@/components/dashboard/DashboardSelector.vue'
 import MetricCard from '@/components/dashboard/MetricCard.vue'
 import LineChart from '@/components/charts/LineChart.vue'
 import BarChart from '@/components/charts/BarChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import DocumentationButton from '@/components/common/DocumentationButton.vue'
 import DocumentationModal from '@/components/common/DocumentationModal.vue'
+import ExecutiveDashboard from '@/components/dashboards/ExecutiveDashboard.vue'
+import CIODashboard from '@/components/dashboards/CIODashboard.vue'
 
 const analyticsConfig = inject('analyticsConfig', {})
+const selectedDashboard = ref(analyticsConfig.defaultDashboard || 'executive')
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
+
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
+const dashboardTitle = computed(() => {
+  switch (selectedDashboard.value) {
+    case 'executive':
+      return 'SAIA Executive Dashboard'
+    case 'cio':
+      return 'SAIA Technology & Operations Dashboard'
+    case 'analytics':
+      return 'Analytics Dashboard'
+    default:
+      return 'SAIA Executive Dashboard'
+  }
+})
+
 watch(selectedPeriod, (newPeriod) => {
-  fetchAnalytics(newPeriod)
+  if (selectedDashboard.value === 'analytics') {
+    fetchAnalytics(newPeriod)
+  }
 })
 
 onMounted(() => {
-  fetchAnalytics(selectedPeriod.value)
-  
-  if (analyticsConfig.refreshInterval) {
-    setInterval(() => {
-      fetchAnalytics(selectedPeriod.value)
-    }, analyticsConfig.refreshInterval)
+  if (selectedDashboard.value === 'analytics') {
+    fetchAnalytics(selectedPeriod.value)
+    
+    if (analyticsConfig.refreshInterval) {
+      setInterval(() => {
+        fetchAnalytics(selectedPeriod.value)
+      }, analyticsConfig.refreshInterval)
+    }
   }
 })
 </script>
 
+<style src="@/styles/saia-theme.css"></style>
 <style scoped>
 .dashboard {
   min-height: 100vh;
@@ -113,6 +150,12 @@ onMounted(() => {
 }
 
 .dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.analytics-content {
   display: flex;
   flex-direction: column;
   gap: 32px;

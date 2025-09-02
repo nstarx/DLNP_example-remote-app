@@ -1,0 +1,94 @@
+/* SAIA Brand Colors and Theme */
+:root {
+  /* SAIA Brand Colors */
+  --saia-red: #d91e2a;
+  --saia-dark-red: #b71c1c;
+  --saia-blue: #1e40af;
+  --saia-navy: #1e3a8a;
+  --saia-gray: #6b7280;
+  --saia-light-gray: #f3f4f6;
+  
+  /* Dashboard Theme Colors */
+  --dashboard-primary: var(--saia-red);
+  --dashboard-secondary: var(--saia-blue);
+  --dashboard-accent: var(--saia-navy);
+  --dashboard-success: #10b981;
+  --dashboard-warning: #f59e0b;
+  --dashboard-error: #ef4444;
+}
+
+/* SAIA Dashboard Header Styling */
+.dashboard .dashboard-title {
+  background: linear-gradient(135deg, var(--saia-red), var(--saia-dark-red));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--saia-red);
+}
+
+.dashboard .dashboard-title::after {
+  content: '®';
+  font-size: 0.5em;
+  vertical-align: super;
+  opacity: 0.7;
+}
+
+/* Executive Dashboard Styling */
+.executive-dashboard .section-title {
+  color: var(--saia-red) !important;
+  border-bottom-color: var(--saia-red) !important;
+}
+
+/* CIO Dashboard Styling */
+.cio-dashboard .section-title {
+  color: var(--saia-blue) !important;
+  border-bottom-color: var(--saia-blue) !important;
+}
+
+/* Metric Cards Brand Styling */
+.executive-metric-card .metric-value {
+  color: var(--saia-navy);
+}
+
+/* Status Indicators with SAIA Branding */
+.status-good {
+  background: rgba(217, 30, 42, 0.1) !important;
+  color: var(--saia-dark-red) !important;
+  border: 1px solid rgba(217, 30, 42, 0.2);
+}
+
+/* Dashboard Selector Styling */
+.dashboard-selector .selector-dropdown:focus {
+  border-color: var(--saia-red);
+  box-shadow: 0 0 0 3px rgba(217, 30, 42, 0.1);
+}
+
+/* Responsive SAIA Branding */
+@media (max-width: 768px) {
+  .dashboard .dashboard-title {
+    font-size: 20px;
+  }
+}
+
+/* Dark Mode Adjustments */
+@media (prefers-color-scheme: dark) {
+  .dashboard .dashboard-title {
+    background: linear-gradient(135deg, #ff4444, var(--saia-red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .executive-dashboard .section-title {
+    color: #ff6b6b !important;
+  }
+  
+  .cio-dashboard .section-title {
+    color: #60a5fa !important;
+  }
+  
+  .status-good {
+    background: rgba(255, 107, 107, 0.15) !important;
+    color: #ff6b6b !important;
+  }
+}
