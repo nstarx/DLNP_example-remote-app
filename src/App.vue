@@ -3,6 +3,7 @@
     <header class="dashboard-header">
       <div class="header-left">
         <h1 class="dashboard-title">Analytics Dashboard</h1>
+        <span class="hello-world-label">Hello World</span>
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
@@ -97,6 +98,7 @@ onMounted(() => {
 .header-left {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
 .header-right {
@@ -110,6 +112,18 @@ onMounted(() => {
   font-weight: 700;
   color: #111827;
   margin: 0;
+}
+
+.hello-world-label {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .dashboard-content {
@@ -180,11 +194,16 @@ onMounted(() => {
   .dashboard {
     background: #111827;
   }
-  
+
   .dashboard-title {
     color: #f9fafb;
   }
-  
+
+  .hello-world-label {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
+  }
+
   .error-message {
     background: #7f1d1d;
     color: #fecaca;
