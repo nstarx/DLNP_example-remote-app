@@ -6,6 +6,10 @@
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
+        <button class="hello-world-btn" @click="showHelloWorld">
+          <i class="pi pi-star-fill"></i>
+          Hello World
+        </button>
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
@@ -68,9 +72,13 @@ watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
 
+const showHelloWorld = () => {
+  alert('Hello World! 🌍')
+}
+
 onMounted(() => {
   fetchAnalytics(selectedPeriod.value)
-  
+
   if (analyticsConfig.refreshInterval) {
     setInterval(() => {
       fetchAnalytics(selectedPeriod.value)
@@ -103,6 +111,37 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.hello-world-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.hello-world-btn:hover {
+  background: #4338ca;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.hello-world-btn:active {
+  background: #3730a3;
+  transform: translateY(0);
+}
+
+.hello-world-btn i {
+  font-size: 12px;
 }
 
 .dashboard-title {
@@ -180,14 +219,26 @@ onMounted(() => {
   .dashboard {
     background: #111827;
   }
-  
+
   .dashboard-title {
     color: #f9fafb;
   }
-  
+
   .error-message {
     background: #7f1d1d;
     color: #fecaca;
+  }
+
+  .hello-world-btn {
+    background: #6366f1;
+  }
+
+  .hello-world-btn:hover {
+    background: #5b21b6;
+  }
+
+  .hello-world-btn:active {
+    background: #4c1d95;
   }
 }
 </style>
