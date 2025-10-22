@@ -6,6 +6,10 @@
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
+        <button class="hello-button" @click="sayHello">
+          <i class="pi pi-heart"></i>
+          Hello
+        </button>
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
@@ -63,6 +67,10 @@ const analyticsConfig = inject('analyticsConfig', {})
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
+
+const sayHello = () => {
+  alert('Hello! Welcome to the Analytics Dashboard! 👋')
+}
 
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
@@ -126,6 +134,37 @@ onMounted(() => {
   text-align: center;
 }
 
+.hello-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.hello-button:hover {
+  background: #2563eb;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.hello-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hello-button i {
+  font-size: 16px;
+}
+
 .metrics-section {
   width: 100%;
 }
@@ -180,14 +219,22 @@ onMounted(() => {
   .dashboard {
     background: #111827;
   }
-  
+
   .dashboard-title {
     color: #f9fafb;
   }
-  
+
   .error-message {
     background: #7f1d1d;
     color: #fecaca;
+  }
+
+  .hello-button {
+    background: #1e40af;
+  }
+
+  .hello-button:hover {
+    background: #1d4ed8;
   }
 }
 </style>
