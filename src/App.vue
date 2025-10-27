@@ -10,6 +10,10 @@
           <i class="pi pi-heart"></i>
           Hello World
         </button>
+        <button class="hello-world-btn-2" @click="showHelloWorld2">
+          <i class="pi pi-star"></i>
+          Hello World
+        </button>
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
@@ -70,6 +74,10 @@ const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
 const showHelloWorld = () => {
   alert('Hello World! 🌍 Welcome to the Analytics Dashboard!')
+}
+
+const showHelloWorld2 = () => {
+  alert('Hello World 2! ⭐ You clicked the second Hello button!')
 }
 
 watch(selectedPeriod, (newPeriod) => {
@@ -141,6 +149,37 @@ onMounted(() => {
 }
 
 .hello-world-btn i {
+  font-size: 16px;
+}
+
+.hello-world-btn-2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hello-world-btn-2:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #e082ea 0%, #e4465b 100%);
+}
+
+.hello-world-btn-2:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hello-world-btn-2 i {
   font-size: 16px;
 }
 
@@ -235,6 +274,14 @@ onMounted(() => {
 
   .hello-world-btn:hover {
     background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  }
+
+  .hello-world-btn-2 {
+    background: linear-gradient(135deg, #ec4899 0%, #ef4444 100%);
+  }
+
+  .hello-world-btn-2:hover {
+    background: linear-gradient(135deg, #db2777 0%, #dc2626 100%);
   }
 }
 </style>

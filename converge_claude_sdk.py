@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -45,12 +46,30 @@ def parse_args():
 
 async def main(
     prompt,
-    max_turns=3,
+    max_turns=300,
     system_prompt="",
     cwd="/app/source",
     permission_mode="acceptEdits",
     show_cost=False,
 ):
+    dry_run = os.environ.get("DRY_RUN", "").lower() in ("true", "1", "yes")
+
+    if dry_run:
+        print("\n" + "=" * 60)
+        print("🔧 DRY-RUN MODE: Claude API call skipped")
+        print("=" * 60)
+        print(f"Prompt received: {prompt}")
+        print(f"Working directory: {cwd}")
+        print("\nIn dry-run mode, the following would normally happen:")
+        print("  1. Initialize Claude Code SDK")
+        print("  2. Send prompt to Claude API")
+        print("  3. Process code modifications")
+        print("  4. Update files based on Claude's analysis")
+        print("\nAll steps SKIPPED to save API costs.")
+        print("Container will exit successfully.")
+        print("=" * 60 + "\n")
+        return
+
     system_prompt = """
        You are a helpful assistant that edits files while keeping the app runnable with all the cost.
        This is the most important part of the app. To run.

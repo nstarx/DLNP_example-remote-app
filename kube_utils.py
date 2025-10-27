@@ -19,6 +19,7 @@ def get_app_name():
 def create_configmap_prompt(prompt_text, cost_info, namespace="claude-test"):
 
     app_name = get_app_name()
+    print(f"Creating ConfigMap... {app_name}")
 
     if not app_name:
         app_name = "default-app"
