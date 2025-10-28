@@ -6,6 +6,10 @@
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
+        <button class="hello-button" @click="handleHelloWorld">
+          <i class="pi pi-globe"></i>
+          <span>Hello World</span>
+        </button>
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
@@ -64,6 +68,10 @@ const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
 
+const handleHelloWorld = () => {
+  alert('Hello World! 🌍 Welcome to Analytics Dashboard')
+}
+
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
 })
@@ -110,6 +118,37 @@ onMounted(() => {
   font-weight: 700;
   color: #111827;
   margin: 0;
+}
+
+.hello-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.hello-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.hello-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.hello-button i {
+  font-size: 16px;
 }
 
 .dashboard-content {
@@ -180,14 +219,24 @@ onMounted(() => {
   .dashboard {
     background: #111827;
   }
-  
+
   .dashboard-title {
     color: #f9fafb;
   }
-  
+
   .error-message {
     background: #7f1d1d;
     color: #fecaca;
+  }
+
+  .hello-button {
+    background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+    box-shadow: 0 2px 8px rgba(129, 140, 248, 0.3);
+  }
+
+  .hello-button:hover {
+    box-shadow: 0 4px 12px rgba(129, 140, 248, 0.4);
+    background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
   }
 }
 </style>
