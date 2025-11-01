@@ -6,12 +6,23 @@
       </div>
       <div class="header-right">
         <PeriodSelector v-model="selectedPeriod" />
+        <button class="hello-world-btn" @click="handleHelloWorld">
+          <i class="pi pi-heart"></i>
+          Hello World
+        </button>
         <DocumentationButton @click="showDocs = true" />
       </div>
     </header>
 
+    <transition name="fade">
+      <div v-if="showHelloMessage" class="hello-message">
+        <i class="pi pi-check-circle"></i>
+        Hello World! Welcome to the Analytics Dashboard
+      </div>
+    </transition>
+
     <LoadingSpinner v-if="loading" />
-    
+
     <div v-else-if="error" class="error-message">
       {{ error }}
     </div>
@@ -62,7 +73,15 @@ import DocumentationModal from '@/components/common/DocumentationModal.vue'
 const analyticsConfig = inject('analyticsConfig', {})
 const selectedPeriod = ref(analyticsConfig.defaultPeriod || '7d')
 const showDocs = ref(false)
+const showHelloMessage = ref(false)
 const { metrics, chartData, loading, error, fetchAnalytics } = useAnalytics()
+
+const handleHelloWorld = () => {
+  showHelloMessage.value = true
+  setTimeout(() => {
+    showHelloMessage.value = false
+  }, 3000)
+}
 
 watch(selectedPeriod, (newPeriod) => {
   fetchAnalytics(newPeriod)
@@ -105,6 +124,35 @@ onMounted(() => {
   gap: 16px;
 }
 
+.hello-world-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.hello-world-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+.hello-world-btn:active {
+  transform: translateY(0);
+}
+
+.hello-world-btn i {
+  font-size: 16px;
+}
+
 .dashboard-title {
   font-size: 32px;
   font-weight: 700;
@@ -116,6 +164,41 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 32px;
+}
+
+.hello-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.hello-message i {
+  font-size: 24px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 .error-message {
