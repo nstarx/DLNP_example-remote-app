@@ -3,7 +3,10 @@ import vue from '@vitejs/plugin-vue'
 import federation from '@originjs/vite-plugin-federation'
 import { resolve } from 'path'
 
+const basePath = process.env.BASE_PATH || '/'
+
 export default defineConfig({
+  base: basePath,
   plugins: [
     vue(),
     federation({
