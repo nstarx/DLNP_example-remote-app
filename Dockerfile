@@ -1,28 +1,21 @@
-FROM node:18-alpine
+# Unified Docker image serving all branch apps via nginx
+# All pre-built branch outputs are in dist-all/<branch-name>/
+# nginx routes /<branch-name>/ to the corresponding app
 
-RUN apk add --no-cache curl
+FROM nginx:1.25-alpine
 
-WORKDIR /app
+# Copy all branch builds (pre-built on host)
+COPY dist-all/ /usr/share/nginx/html/
 
-COPY package*.json ./
+# Copy landing page
+COPY dist-all/index.html /usr/share/nginx/html/index.html
 
-RUN npm ci
+# Copy nginx config
+COPY nginx.docker.conf /etc/nginx/conf.d/default.conf
 
-COPY . .
-
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -S appuser -u 1001 -G appgroup
-
-RUN chown -R appuser:appgroup /app
-USER appuser
-
-EXPOSE 3001
-
-LABEL maintainer="adrian@nstarxinc.com"
-LABEL description="Example Module Federation Remote App - Vue.js"
-LABEL version="1.0.0"
+EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://0.0.0.0:3001/ || exit 1
+  CMD wget -qO- http://localhost/health || exit 1
 
-CMD ["npm", "run", "dev"]
+CMD ["nginx", "-g", "daemon off;"]

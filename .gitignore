@@ -142,3 +142,6 @@ dist/
 npm-debug.log
 yarn-error.log
 
+# Multi-branch build output
+dist-all/
+
